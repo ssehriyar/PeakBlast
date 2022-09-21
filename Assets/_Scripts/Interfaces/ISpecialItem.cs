@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class BorderCanvas : MonoBehaviour
+public interface ISpecialItem
 {
-
+    public void SpecialAction();
 }

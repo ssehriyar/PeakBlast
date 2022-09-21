@@ -8,18 +8,7 @@ public struct TileAttribute
 {
 	public int x;
 	public int y;
-	public TileType type;
-}
-
-public enum TileType
-{
-	Red,
-	Green,
-	Blue,
-	Yellow,
-	Purple,
-	Balloon,
-	Duck,
-	LeftRocket,
-	RightRocket,
+	public Tile[] neighbourTiles;
+	public ItemType itemType;
+	public MatchType matchType;
 }

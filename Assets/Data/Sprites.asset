@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 216b2c30f1957874982c1df5a9c2248b, type: 3}
+  m_Name: Sprites
+  m_EditorClassIdentifier: 
+  RedCube: {fileID: 21300000, guid: 389b26bafabb3a84b91bdbcedf4f8c08, type: 3}
+  GreenCube: {fileID: 21300000, guid: 0d29a559b41210543914d8f4f81eb461, type: 3}
+  BlueCube: {fileID: 21300000, guid: 4be17d1693a1b5a4893497918ed2f1ce, type: 3}
+  YellowCube: {fileID: 21300000, guid: 0d8f8de8d9d142e4cbf6dfe5ac990d86, type: 3}
+  PurpleCube: {fileID: 21300000, guid: 8b56576f03cfe8747836dac0c22fc5d8, type: 3}
+  Balloon: {fileID: 21300000, guid: 045f76e94df07e7499cba7ef51394789, type: 3}
+  Duck: {fileID: 21300000, guid: fbdf643d97232e44ea8c5446b230d249, type: 3}
+  LeftRocket: {fileID: 21300000, guid: f3914891d03a15644a61f4a47584dfa2, type: 3}
+  RightRocket: {fileID: 21300000, guid: 5f9a67f4456f88d4cbe6b665c9f58d64, type: 3}

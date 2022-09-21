@@ -3,47 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class MatchSearch : MonoBehaviour
+public class MatchSearch
 {
-	public static MatchSearch Instance { get; private set; }
-
+	public Tile[,] map;
 	public bool[,] visited;
+	int matchCounter = 0;
 
-	private void Awake()
+	public MatchSearch(ref Tile[,] map)
 	{
-		Instance = this;
+		this.map = map;
 	}
 
-	public void Search(Tile[,] map, Tile tile, ref Stack<Tile> stack)
+	public int Search(Tile tile, ref Stack<Tile> tiles)
 	{
-		if (visited == null)
-		{
-			visited = new bool[map.GetLength(0), map.GetLength(1)];
-		}
+		matchCounter = 0;
+		visited = new bool[map.GetLength(0), map.GetLength(1)];
+		FindMatch(tile, tile.item.GetMatchType(), ref tiles);
+		return matchCounter;
+	}
 
-		TileAttribute tileAtt = tile.tileAttribute;
-		visited[tileAtt.x, tileAtt.y] = true;
+	public void FindMatch(Tile tile, MatchType matchType, ref Stack<Tile> tiles)
+	{
+		if (tile == null || visited[tile.x, tile.y] || matchType == MatchType.None) return;
 
-		// Left search
-		if (tileAtt.x - 1 >= 0 && !visited[tileAtt.x - 1, tileAtt.y] && tileAtt.type == map[tileAtt.x - 1, tileAtt.y].tileAttribute.type)
+		visited[tile.x, tile.y] = true;
+
+		if (tile.item.CanBeExplodedByNeighbourMatch()) // Balloon
 		{
-			Search(map, map[tileAtt.x - 1, tileAtt.y], ref stack);
+			tiles.Push(tile);
+			return;
 		}
-		// Right search
-		if (tileAtt.x + 1 < map.GetLength(0) && !visited[tileAtt.x + 1, tileAtt.y] && tileAtt.type == map[tileAtt.x + 1, tileAtt.y].tileAttribute.type)
+		if (tile.item.GetMatchType() == matchType) // Cube
 		{
-			Search(map, map[tileAtt.x + 1, tileAtt.y], ref stack);
+			matchCounter++;
+			tiles.Push(tile);
+			for (int i = 0; i < tile.neighbourTiles.Length; i++)
+			{
+				FindMatch(tile.neighbourTiles[i], matchType, ref tiles);
+			}
 		}
-		// Top search
-		if (tileAtt.y + 1 < map.GetLength(1) && !visited[tileAtt.x, tileAtt.y + 1] && tileAtt.type == map[tileAtt.x, tileAtt.y + 1].tileAttribute.type)
-		{
-			Search(map, map[tileAtt.x, tileAtt.y + 1], ref stack);
-		}
-		// Bottom search
-		if (tileAtt.y - 1 >= 0 && !visited[tileAtt.x, tileAtt.y - 1] && tileAtt.type == map[tileAtt.x, tileAtt.y - 1].tileAttribute.type)
-		{
-			Search(map, map[tileAtt.x, tileAtt.y - 1], ref stack);
-		}
-		stack.Push(tile);
 	}
 }

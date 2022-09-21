@@ -6,110 +6,121 @@ using System;
 public class TileManager : MonoBehaviour
 {
 	public static TileManager Instance { get; private set; }
+	private Tile[,] map;
 	private Stack<Tile> tiles;
 	private ActionManager _actionManager;
-	[SerializeField] private GameObject _gameObject;
-
-	public Tile[,] map;
-	[SerializeField] private GridGenerator level;
-
-	public void Du(Vector3 pos)
-	{
-		var go = Instantiate(_gameObject, pos, Quaternion.identity, transform);
-		go.GetComponent<Tile>().tileAttribute.x = (int)pos.x;
-		go.GetComponent<Tile>().tileAttribute.y = (int)pos.y;
-		go.name = $"Tile {pos.x} {pos.y}";
-		go.GetComponent<Renderer>().sortingOrder = (int)pos.y;
-	}
+	private MatchSearch _matchManager;
+	[SerializeField] private Board board;
+	[SerializeField] private Transform _tileParent;
+	[SerializeField] private int _minMatchNumber = 2;
 
 	private void Awake()
 	{
 		Instance = this;
+		GetBoardInfo();
+		InitTiles();
 
-		map = new Tile[level.GetGrid.width, level.GetGrid.height];
+		tiles = new Stack<Tile>();
+		_actionManager = new ActionManager(ref map);
+		_matchManager = new MatchSearch(ref map);
+	}
+
+	private void GetBoardInfo()
+	{
+		map = new Tile[board.GetGrid.width, board.GetGrid.height];
 		int counter = 0;
-		for (int i = 0; i < level.GetGrid.width; i++)
+		for (int i = 0; i < board.GetGrid.width; i++)
 		{
-			for (int j = 0; j < level.GetGrid.height; j++)
+			for (int j = 0; j < board.GetGrid.height; j++)
 			{
-				map[i, j] = transform.GetChild(counter).GetComponent<Tile>();
-				map[i, j].tileAttribute.x = i;
-				map[i, j].tileAttribute.y = j;
+				Tile tile = _tileParent.GetChild(counter).GetComponent<Tile>();
+				map[i, j] = tile;
 				counter++;
 			}
 		}
-
-		_actionManager = new ActionManager(ref map);
 	}
 
-	private void Update()
+	private void InitTiles()
 	{
-		if (Input.GetMouseButtonDown(0))
+		for (int i = 0; i < board.GetGrid.width; i++)
 		{
-			RaycastHit2D hit = Physics2D.GetRayIntersection(Camera.main.ScreenPointToRay(Input.mousePosition));
-			if (hit)
+			for (int j = 0; j < board.GetGrid.height; j++)
 			{
-				FindTypeAction(hit.transform.GetComponent<Tile>());
-				Debug.Log(hit.transform.name);
+				map[i, j].Init(TileNeighbours(i, j), i, j);
 			}
 		}
+	}
+
+	public Tile[] TileNeighbours(int x, int y)
+	{
+		Tile[] neig = new Tile[4];
+		neig[(int)Direction.Left] = GetNeighbourWithDirection(x, y, Direction.Left);
+		neig[(int)Direction.Up] = GetNeighbourWithDirection(x, y, Direction.Up);
+		neig[(int)Direction.Right] = GetNeighbourWithDirection(x, y, Direction.Right);
+		neig[(int)Direction.Down] = GetNeighbourWithDirection(x, y, Direction.Down);
+		return neig;
+	}
+
+	public Tile GetNeighbourWithDirection(int x, int y, Direction direction)
+	{
+		switch (direction)
+		{
+			case Direction.Left:
+				x -= 1;
+				break;
+			case Direction.Up:
+				y += 1;
+				break;
+			case Direction.Right:
+				x += 1;
+				break;
+			case Direction.Down:
+				y -= 1;
+				break;
+		}
+
+		if (x >= map.GetLength(0) || x < 0 || y >= map.GetLength(1) || y < 0) return null;
+
+		return map[x, y];
 	}
 
 	public void FindTypeAction(Tile tile)
 	{
-		switch (tile.tileAttribute.type)
+		if (tile == null || !tile.HasItem) return;
+
+		tiles.Clear();
+
+		if (tile.item.CanBeMatchedByTouch())
 		{
-			case TileType.Balloon:
-				break;
-			case TileType.Duck:
-				break;
-			case TileType.LeftRocket:
-				LeftRowClear(tile);
-				break;
-			case TileType.RightRocket:
-				RightRowClear(tile);
-				break;
-			default:
-				TileSearch(tile);
-				break;
+			TileSearch(tile);
+		}
+		else if (tile.item.CanBeExplodedByTouch())
+		{
+			tile.item.SpecialAction(tile, ref tiles);
+			_actionManager.Fill(tiles);
+			_actionManager.Fall();
 		}
 	}
 
 	public void TileSearch(Tile tile)
 	{
-		tiles = new Stack<Tile>();
-		MatchSearch.Instance.Search(map, tile, ref tiles);
-		if (tiles.Count > 1)
+		int matchCounter = _matchManager.Search(tile, ref tiles);
+		if (matchCounter >= _minMatchNumber)
 		{
 			_actionManager.Fill(tiles);
-		}
-		switch (tiles.Count)
-		{
-			case 2:
-				break;
-			case 3:
-				break;
+			_actionManager.Fall();
 		}
 		Debug.Log(tiles.Count);
 	}
 
-	public void RightRowClear(Tile tile)
+	public void LastTileControl()
 	{
-		tiles = new Stack<Tile>();
-		for (int i = tile.tileAttribute.x; i < map.GetLength(0); i++)
+		for (int x = 0; x < map.GetLength(0); x++)
 		{
-			tiles.Push(map[i, tile.tileAttribute.y]);
+			if (map[x, 0].item)
+			{
+				_actionManager.FreeDuck(map[x, 0]);
+			}
 		}
-		_actionManager.Fill(tiles);
-	}
-
-	public void LeftRowClear(Tile tile)
-	{
-		tiles = new Stack<Tile>();
-		for (int i = tile.tileAttribute.x; i >= 0; i--)
-		{
-			tiles.Push(map[i, tile.tileAttribute.y]);
-		}
-		_actionManager.Fill(tiles);
 	}
 }
