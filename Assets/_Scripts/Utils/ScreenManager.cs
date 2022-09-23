@@ -13,6 +13,6 @@ public class ScreenManager : MonoBehaviour
 	private void PrepareCamera()
 	{
 		var cam = GetComponent<Camera>();
-		cam.orthographicSize = ((_board.GetGrid.width + _offset) / cam.aspect) / 2;
+		cam.orthographicSize = (_board.GetGrid.width + _offset) / cam.aspect / 2;
 	}
 }

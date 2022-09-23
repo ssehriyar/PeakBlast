@@ -1,4 +1,12 @@
 
+public enum GameState
+{
+	Loading,
+	Play,
+	Win,
+	Fail,
+}
+
 public enum MatchType
 {
 	None,
@@ -7,12 +15,11 @@ public enum MatchType
 	Blue,
 	Yellow,
 	Purple,
-	Special
+	Special,
 }
 
 public enum ItemType
 {
-	None,
 	RedCube,
 	GreenCube,
 	BlueCube,
@@ -21,7 +28,8 @@ public enum ItemType
 	Balloon,
 	Duck,
 	LeftRocket,
-	RightRocket
+	RightRocket,
+	None,
 }
 
 public enum Direction
@@ -30,4 +38,12 @@ public enum Direction
 	Up = 1,
 	Right = 2,
 	Down = 3
+}
+
+public enum AudioType
+{
+	CubeCollect,
+	CubeExplode,
+	Balloon,
+	Duck,
 }

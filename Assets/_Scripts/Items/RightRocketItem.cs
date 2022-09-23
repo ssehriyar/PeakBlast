@@ -2,28 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using DG.Tweening;
 
 public class RightRocketItem : Item
 {
-	public override void Init(int orderInLayer)
+	public override void SetSprite()
 	{
-		base.Init(orderInLayer);
-		spriteRenderer.sprite = scriptableContainer.sprites.RightRocket;
+		spriteRenderer.sprite = scriptableContainer.spritesSC.RightRocket;
 	}
 
-	public override MatchType GetMatchType()
+	public override bool Execute()
 	{
-		return MatchType.Special;
-	}
-
-	public override bool CanBeExplodedByTouch()
-	{
+		command.ClearRightRow(tile);
 		return true;
 	}
 
-	public override bool CanBeMatchedByTouch()
+	public override void SpecialExecute()
 	{
-		return false;
+		command.JustPickRightRow(tile);
 	}
 
 	public override bool CanFall()
@@ -31,23 +27,22 @@ public class RightRocketItem : Item
 		return true;
 	}
 
-	public override bool CanBeExplodedByNeighbourMatch()
+	public override bool ExplodeNeighbourmatch()
 	{
-		return true;
+		return false;
 	}
 
 	public override void Explode()
 	{
+		if (tweener.IsActive())
+		{
+			tweener.Kill(true);
+		}
 		Destroy(gameObject);
 	}
 
-	public override void SpecialAction(Tile tile, ref Stack<Tile> tiles)
+	public override void GoalExplode(Vector3 pos)
 	{
-		tiles.Push(tile);
-		while (tile.neighbourTiles[(int)Direction.Right] != null)
-		{
-			tiles.Push(tile.neighbourTiles[(int)Direction.Right]);
-			tile = tile.neighbourTiles[(int)Direction.Right];
-		}
+		tweener = transform.DOMove(pos, moveSpeedToUI)/*.OnComplete(() => Sound)*/;
 	}
 }

@@ -6,34 +6,56 @@ using DG.Tweening;
 
 public abstract class Item : MonoBehaviour
 {
-	public ScriptableContainer scriptableContainer;
+	public Tile tile;
+	public MatchType matchType;
+	public Command command;
 	public SpriteRenderer spriteRenderer;
+	public ScriptableContainer scriptableContainer;
+	protected Tweener tweener;
+	protected float fallSpeed;
+	protected float moveSpeedToUI;
 
-	public virtual void Init(int orderInLayer)
+	public virtual void Init(Tile tile, MatchType matchType)
 	{
-		scriptableContainer = FindObjectOfType<ScriptableContainer>();
+		this.tile = tile;
+		this.matchType = matchType;
+		command = FindObjectOfType<Command>();
 		spriteRenderer = GetComponent<SpriteRenderer>();
-		spriteRenderer.sortingOrder = orderInLayer;
+		scriptableContainer = FindObjectOfType<ScriptableContainer>();
+		spriteRenderer.sortingOrder = tile.y;
+		tweener = null;
+		if (Application.isPlaying)
+		{
+			fallSpeed = GameConstant.Instance.FallSpeed;
+			moveSpeedToUI = GameConstant.Instance.MovingToUI;
+		}
+		SetSprite();
+		SetTile(tile);
+		FallToPos(new Vector3(tile.x, tile.y));
 	}
 
-	public virtual void Init(int orderInLayer, MatchType matchType) { }
-
-	public abstract MatchType GetMatchType();
-
-	public abstract bool CanBeExplodedByTouch();
-
-	public abstract bool CanBeMatchedByTouch();
-
-	public abstract bool CanFall();
-
-	public abstract bool CanBeExplodedByNeighbourMatch();
-
-	public abstract void Explode();
-
-	public virtual void MoveTo(Vector3 pos)
+	protected virtual void Start()
 	{
-		transform.DOMove(pos, 0.3f);
+		fallSpeed = GameConstant.Instance.FallSpeed;
+		moveSpeedToUI = GameConstant.Instance.MovingToUI;
 	}
 
-	public abstract void SpecialAction(Tile tile, ref Stack<Tile> tiles);
+	public abstract void SetSprite();
+	public abstract bool Execute();
+	public abstract void SpecialExecute();
+	public abstract bool CanFall();
+	public abstract bool ExplodeNeighbourmatch();
+	public abstract void Explode();
+	public abstract void GoalExplode(Vector3 pos);
+
+	public virtual void SetTile(Tile tile)
+	{
+		this.tile = tile;
+		spriteRenderer.sortingOrder = tile.y;
+	}
+
+	public virtual void FallToPos(Vector3 pos)
+	{
+		transform.DOMove(pos, fallSpeed);
+	}
 }

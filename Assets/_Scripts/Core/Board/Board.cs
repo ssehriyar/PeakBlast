@@ -13,11 +13,11 @@ public class Board : MonoBehaviour
 	[SerializeField] private Transform _itemParent;
 	[SerializeField] private Transform _borderParent;
 	[SerializeField] private GameObject _tilePrefab;
-	//[SerializeField] private GameObject _itemPrefab;
 	[SerializeField] private GameObject _borderPrefab;
 	public Grid GetGrid => _grid;
 	public ScriptableContainer scriptableContainer;
 
+	// Editor function
 	public void GenerateBoard()
 	{
 		for (int x = 0; x < _grid.width; x++)
@@ -27,7 +27,8 @@ public class Board : MonoBehaviour
 				GameObject spawnedTile = Instantiate(_tilePrefab, new Vector3(x, y), Quaternion.identity, _tileParent);
 				spawnedTile.name = $"Tile {x} {y}";
 				Tile tile = spawnedTile.GetComponent<Tile>();
-				tile.item = ItemFactory.CreateItem(tile.itemType, new Vector3(x, y), _itemParent);
+				tile.itemType = ItemType.RedCube;
+				tile.item = ItemFactory.CreateItem(tile, tile.itemType, new Vector3(x, y), _itemParent);
 			}
 		}
 		_cam.transform.position = new Vector3(_grid.width * 0.5f - 0.5f, _grid.height * 0.5f - 0.5f, _cam.transform.position.z);
@@ -37,6 +38,7 @@ public class Board : MonoBehaviour
 		border.GetComponent<SpriteRenderer>().size = new Vector2(_grid.width + 0.2f, _grid.height + 0.5f);
 	}
 
+	// Editor function
 	public void ClearBoard()
 	{
 		if (_tileParent.childCount != 0)

@@ -4,11 +4,8 @@ using UnityEngine;
 using System;
 
 [Serializable]
-public struct TileAttribute
+public struct ColorType
 {
-	public int x;
-	public int y;
-	public Tile[] neighbourTiles;
-	public ItemType itemType;
 	public MatchType matchType;
+	public Color color;
 }

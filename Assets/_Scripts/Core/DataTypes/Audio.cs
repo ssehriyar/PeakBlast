@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public interface ISpecialItem
+[Serializable]
+public struct Audio
 {
-    public void SpecialAction();
+	public AudioType audioType;
+	public AudioClip audioClip;
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 [CreateAssetMenu(fileName = "Sprites", menuName = "Scriptables/Sprites")]
-public class ImageLibrary : ScriptableObject
+public class SpritesSC : ScriptableObject
 {
 	public Sprite RedCube;
 	public Sprite GreenCube;

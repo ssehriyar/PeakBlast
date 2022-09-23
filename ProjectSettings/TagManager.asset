@@ -47,3 +47,12 @@ TagManager:
   - name: Tile
     uniqueID: 3806160089
     locked: 0
+  - name: Particle
+    uniqueID: 1892444121
+    locked: 0
+  - name: Win
+    uniqueID: 3458163991
+    locked: 0
+  - name: Fail
+    uniqueID: 863237647
+    locked: 0
