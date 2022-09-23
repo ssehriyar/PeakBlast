@@ -2,39 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using DG.Tweening;
 
 public class TileManager : MonoBehaviour
 {
 	public static TileManager Instance { get; private set; }
-	private Tile[,] map;
-	private Stack<Tile> tiles;
-	private ActionManager _actionManager;
-	private MatchSearch _matchManager;
 	[SerializeField] private Board board;
 	[SerializeField] private Transform _tileParent;
-	[SerializeField] private int _minMatchNumber = 2;
+
+	public Tile[,] Map { get; private set; }
 
 	private void Awake()
 	{
 		Instance = this;
 		GetBoardInfo();
 		InitTiles();
-
-		tiles = new Stack<Tile>();
-		_actionManager = new ActionManager(ref map);
-		_matchManager = new MatchSearch(ref map);
+		DOTween.SetTweensCapacity(500, 100);
 	}
 
 	private void GetBoardInfo()
 	{
-		map = new Tile[board.GetGrid.width, board.GetGrid.height];
+		Map = new Tile[board.GetGrid.width, board.GetGrid.height];
 		int counter = 0;
 		for (int i = 0; i < board.GetGrid.width; i++)
 		{
 			for (int j = 0; j < board.GetGrid.height; j++)
 			{
 				Tile tile = _tileParent.GetChild(counter).GetComponent<Tile>();
-				map[i, j] = tile;
+				Map[i, j] = tile;
 				counter++;
 			}
 		}
@@ -46,7 +41,7 @@ public class TileManager : MonoBehaviour
 		{
 			for (int j = 0; j < board.GetGrid.height; j++)
 			{
-				map[i, j].Init(TileNeighbours(i, j), i, j);
+				Map[i, j].Init(TileNeighbours(i, j), i, j);
 			}
 		}
 	}
@@ -79,48 +74,8 @@ public class TileManager : MonoBehaviour
 				break;
 		}
 
-		if (x >= map.GetLength(0) || x < 0 || y >= map.GetLength(1) || y < 0) return null;
+		if (x >= Map.GetLength(0) || x < 0 || y >= Map.GetLength(1) || y < 0) return null;
 
-		return map[x, y];
-	}
-
-	public void FindTypeAction(Tile tile)
-	{
-		if (tile == null || !tile.HasItem) return;
-
-		tiles.Clear();
-
-		if (tile.item.CanBeMatchedByTouch())
-		{
-			TileSearch(tile);
-		}
-		else if (tile.item.CanBeExplodedByTouch())
-		{
-			tile.item.SpecialAction(tile, ref tiles);
-			_actionManager.Fill(tiles);
-			_actionManager.Fall();
-		}
-	}
-
-	public void TileSearch(Tile tile)
-	{
-		int matchCounter = _matchManager.Search(tile, ref tiles);
-		if (matchCounter >= _minMatchNumber)
-		{
-			_actionManager.Fill(tiles);
-			_actionManager.Fall();
-		}
-		Debug.Log(tiles.Count);
-	}
-
-	public void LastTileControl()
-	{
-		for (int x = 0; x < map.GetLength(0); x++)
-		{
-			if (map[x, 0].item)
-			{
-				_actionManager.FreeDuck(map[x, 0]);
-			}
-		}
+		return Map[x, y];
 	}
 }

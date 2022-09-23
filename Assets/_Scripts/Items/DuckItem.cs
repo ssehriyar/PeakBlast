@@ -2,28 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using DG.Tweening;
 
 public class DuckItem : Item
 {
-	public override void Init(int orderInLayer)
+	public override void Init(Tile tile, MatchType matchType)
 	{
-		base.Init(orderInLayer);
-		spriteRenderer.sprite = scriptableContainer.sprites.Duck;
+		base.Init(tile, matchType);
 	}
 
-	public override MatchType GetMatchType()
+	public override void SetSprite()
 	{
-		return MatchType.None;
+		spriteRenderer.sprite = scriptableContainer.spritesSC.Duck;
 	}
 
-	public override bool CanBeExplodedByTouch()
+	public override bool Execute()
 	{
 		return false;
 	}
 
-	public override bool CanBeMatchedByTouch()
+	public override void SpecialExecute()
 	{
-		return false;
+
 	}
 
 	public override bool CanFall()
@@ -31,18 +31,47 @@ public class DuckItem : Item
 		return true;
 	}
 
-	public override bool CanBeExplodedByNeighbourMatch()
+	public override bool ExplodeNeighbourmatch()
 	{
 		return false;
 	}
 
 	public override void Explode()
 	{
-		Destroy(gameObject);
+		SoundManager.Instance.PlaySound(scriptableContainer.audioSC.GetAudioClip(AudioType.Duck));
+		DestroyObject();
 	}
 
-	public override void SpecialAction(Tile tile, ref Stack<Tile> tiles)
+	public override void GoalExplode(Vector3 pos)
 	{
-		
+		tweener = transform.DOMove(pos, moveSpeedToUI).OnComplete(() => OnMoveCompleted());
+	}
+
+	public void OnMoveCompleted()
+	{
+		SoundManager.Instance.PlaySound(scriptableContainer.audioSC.GetAudioClip(AudioType.Duck));
+		DestroyObject();
+	}
+
+	public override void FallToPos(Vector3 pos)
+	{
+		tweener = transform.DOMove(pos, fallSpeed).OnComplete(() => LastGrid());
+	}
+
+	private void LastGrid()
+	{
+		if (tile.y == 0)
+		{
+			command.DestroyOneTile(tile);
+		}
+	}
+
+	public void DestroyObject()
+	{
+		if (tweener.IsActive())
+		{
+			tweener.Kill(true);
+		}
+		Destroy(gameObject);
 	}
 }

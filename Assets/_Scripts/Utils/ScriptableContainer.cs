@@ -5,6 +5,9 @@ using System;
 
 public class ScriptableContainer : MonoBehaviour
 {
-    public ImageLibrary sprites;
-
+    public SpritesSC spritesSC;
+    public GoalSC goalSC;
+    public ParticleSC particleSC;
+    public ColorSC colorSC;
+    public AudioClipSC audioSC;
 }

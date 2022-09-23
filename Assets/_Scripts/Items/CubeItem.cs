@@ -2,53 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using DG.Tweening;
 
 public class CubeItem : Item
 {
-	[SerializeField] private MatchType _matchType;
-
-	public override void Init(int orderInLayer, MatchType matchType)
+	public override void SetSprite()
 	{
-		base.Init(orderInLayer);
-		_matchType = matchType;
-		SetSprite();
-	}
-
-	private void SetSprite()
-	{
-		switch (_matchType)
+		switch (matchType)
 		{
 			case MatchType.Red:
-				spriteRenderer.sprite = scriptableContainer.sprites.RedCube;
+				spriteRenderer.sprite = scriptableContainer.spritesSC.RedCube;
 				break;
 			case MatchType.Green:
-				spriteRenderer.sprite = scriptableContainer.sprites.GreenCube;
+				spriteRenderer.sprite = scriptableContainer.spritesSC.GreenCube;
 				break;
 			case MatchType.Blue:
-				spriteRenderer.sprite = scriptableContainer.sprites.BlueCube;
+				spriteRenderer.sprite = scriptableContainer.spritesSC.BlueCube;
 				break;
 			case MatchType.Yellow:
-				spriteRenderer.sprite = scriptableContainer.sprites.YellowCube;
+				spriteRenderer.sprite = scriptableContainer.spritesSC.YellowCube;
 				break;
 			case MatchType.Purple:
-				spriteRenderer.sprite = scriptableContainer.sprites.PurpleCube;
+				spriteRenderer.sprite = scriptableContainer.spritesSC.PurpleCube;
 				break;
 		}
 	}
 
-	public override MatchType GetMatchType()
+	public override bool Execute()
 	{
-		return _matchType;
+		return command.MathcSearch(tile);
 	}
 
-	public override bool CanBeExplodedByTouch()
+	public override void SpecialExecute()
 	{
-		return false;
-	}
 
-	public override bool CanBeMatchedByTouch()
-	{
-		return true;
 	}
 
 	public override bool CanFall()
@@ -56,18 +43,44 @@ public class CubeItem : Item
 		return true;
 	}
 
-	public override bool CanBeExplodedByNeighbourMatch()
+	public override bool ExplodeNeighbourmatch()
 	{
 		return false;
 	}
 
 	public override void Explode()
 	{
-		Destroy(gameObject);
+		SoundManager.Instance.PlaySound(scriptableContainer.audioSC.GetAudioClip(AudioType.CubeExplode));
+		CreateParticle();
+		DestroyObject();
 	}
 
-	public override void SpecialAction(Tile tile, ref Stack<Tile> tiles)
+	public override void GoalExplode(Vector3 pos)
 	{
-		
+		SoundManager.Instance.PlaySound(scriptableContainer.audioSC.GetAudioClip(AudioType.CubeExplode));
+		CreateParticle();
+		tweener = transform.DOMove(pos, moveSpeedToUI).OnComplete(() => OnMoveCompleted());
+	}
+
+	public void OnMoveCompleted()
+	{
+		SoundManager.Instance.PlaySound(scriptableContainer.audioSC.GetAudioClip(AudioType.CubeCollect));
+		CreateParticle();
+		DestroyObject();
+	}
+
+	public void CreateParticle()
+	{
+		Particle p = Instantiate(scriptableContainer.particleSC.particle, transform.position, Quaternion.identity).GetComponent<Particle>();
+		p.SetParticleColor(scriptableContainer.colorSC.GetColorByMatchType(matchType));
+	}
+
+	public void DestroyObject()
+	{
+		if (tweener.IsActive())
+		{
+			tweener.Kill(true);
+		}
+		Destroy(gameObject);
 	}
 }

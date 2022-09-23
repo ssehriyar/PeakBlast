@@ -7,7 +7,7 @@ public static class ItemFactory
 {
 	private static GameObject _itemPrefab;
 
-	public static Item CreateItem(ItemType itemType, Vector3 pos, Transform parent)
+	public static Item CreateItem(Tile tile, ItemType itemType, Vector3 pos, Transform parent)
 	{
 		if (_itemPrefab == null)
 		{
@@ -19,65 +19,66 @@ public static class ItemFactory
 		switch (itemType)
 		{
 			case ItemType.RedCube:
-				return CreateCubeItem(newGo, (int)pos.y, MatchType.Red);
+				return CreateCubeItem(tile, newGo, MatchType.Red);
 			case ItemType.GreenCube:
-				return CreateCubeItem(newGo, (int)pos.y, MatchType.Green);
+				return CreateCubeItem(tile, newGo, MatchType.Green);
 			case ItemType.BlueCube:
-				return CreateCubeItem(newGo, (int)pos.y, MatchType.Blue);
+				return CreateCubeItem(tile, newGo, MatchType.Blue);
 			case ItemType.YellowCube:
-				return CreateCubeItem(newGo, (int)pos.y, MatchType.Yellow);
+				return CreateCubeItem(tile, newGo, MatchType.Yellow);
 			case ItemType.PurpleCube:
-				return CreateCubeItem(newGo, (int)pos.y, MatchType.Purple);
+				return CreateCubeItem(tile, newGo, MatchType.Purple);
 			case ItemType.Balloon:
-				return CreateBalloonItem(newGo, (int)pos.y);
+				return CreateBalloonItem(tile, newGo, MatchType.None);
 			case ItemType.Duck:
-				return CreateDuckItem(newGo, (int)pos.y);
+				return CreateDuckItem(tile, newGo, MatchType.None);
 			case ItemType.LeftRocket:
-				return CreateLeftRocketItem(newGo, (int)pos.y);
+				return CreateLeftRocketItem(tile, newGo, MatchType.Special);
 			case ItemType.RightRocket:
-				return CreateRightRocketItem(newGo, (int)pos.y);
+				return CreateRightRocketItem(tile, newGo, MatchType.Special);
 		}
 		return null;
 	}
 
-	public static Item CreateRandomItem(Vector3 pos, Transform parent)
+	public static Item CreateRandomItem(Tile tile, Vector3 pos, Transform parent)
 	{
 		ItemType itemYTpe = (ItemType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(ItemType)).Length - 1);
-		return CreateItem(itemYTpe, pos, parent);
+		tile.itemType = itemYTpe;
+		return CreateItem(tile, itemYTpe, pos, parent);
 	}
 
-	public static Item CreateCubeItem(GameObject go, int orderInLayer, MatchType matchType)
+	public static Item CreateCubeItem(Tile tile, GameObject go, MatchType matchType)
 	{
 		var cubeItem = go.AddComponent<CubeItem>();
-		cubeItem.Init(orderInLayer, matchType);
+		cubeItem.Init(tile, matchType);
 		return cubeItem;
 	}
 
-	public static Item CreateDuckItem(GameObject go, int orderInLayer)
+	public static Item CreateDuckItem(Tile tile, GameObject go, MatchType matchType)
 	{
 		var duckItem = go.AddComponent<DuckItem>();
-		duckItem.Init(orderInLayer);
+		duckItem.Init(tile, matchType);
 		return duckItem;
 	}
 
-	public static Item CreateBalloonItem(GameObject go, int orderInLayer)
+	public static Item CreateBalloonItem(Tile tile, GameObject go, MatchType matchType)
 	{
 		var balloonItem = go.AddComponent<BalloonItem>();
-		balloonItem.Init(orderInLayer);
+		balloonItem.Init(tile, matchType);
 		return balloonItem;
 	}
 
-	public static Item CreateLeftRocketItem(GameObject go, int orderInLayer)
+	public static Item CreateLeftRocketItem(Tile tile, GameObject go, MatchType matchType)
 	{
 		var leftRocketItem = go.AddComponent<LeftRocketItem>();
-		leftRocketItem.Init(orderInLayer);
+		leftRocketItem.Init(tile, matchType);
 		return leftRocketItem;
 	}
 
-	public static Item CreateRightRocketItem(GameObject go, int orderInLayer)
+	public static Item CreateRightRocketItem(Tile tile, GameObject go, MatchType matchType)
 	{
 		var rightRocketItem = go.AddComponent<RightRocketItem>();
-		rightRocketItem.Init(orderInLayer);
+		rightRocketItem.Init(tile, matchType);
 		return rightRocketItem;
 	}
 }

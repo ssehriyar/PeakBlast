@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 
 public class Tile : MonoBehaviour
 {
-	//public TileAttribute tileAttribute;
 	public int x;
 	public int y;
 	public Tile[] neighbourTiles;
@@ -19,57 +18,59 @@ public class Tile : MonoBehaviour
 		this.x = x;
 		this.y = y;
 		neighbourTiles = neigbours;
+		item.SetTile(this);
 	}
 
 	public bool HasItem => item != null;
 
+	// Editor function
 	public void ApplyItemType()
 	{
 		Item temp;
 		switch (itemType)
 		{
 			case ItemType.RedCube:
-				temp = ItemFactory.CreateCubeItem(item.gameObject, item.spriteRenderer.sortingOrder, MatchType.Red);
+				temp = ItemFactory.CreateCubeItem(this, item.gameObject, MatchType.Red);
 				DestroyImmediate(item);
 				item = temp;
 				break;
 			case ItemType.GreenCube:
-				temp = ItemFactory.CreateCubeItem(item.gameObject, item.spriteRenderer.sortingOrder, MatchType.Green);
+				temp = ItemFactory.CreateCubeItem(this, item.gameObject, MatchType.Green);
 				DestroyImmediate(item);
 				item = temp;
 				break;
 			case ItemType.BlueCube:
-				temp = ItemFactory.CreateCubeItem(item.gameObject, item.spriteRenderer.sortingOrder, MatchType.Blue);
+				temp = ItemFactory.CreateCubeItem(this, item.gameObject, MatchType.Blue);
 				DestroyImmediate(item);
 				item = temp;
 				break;
 			case ItemType.YellowCube:
-				temp = ItemFactory.CreateCubeItem(item.gameObject, item.spriteRenderer.sortingOrder, MatchType.Yellow);
+				temp = ItemFactory.CreateCubeItem(this, item.gameObject, MatchType.Yellow);
 				DestroyImmediate(item);
 				item = temp;
 				break;
 			case ItemType.PurpleCube:
-				temp = ItemFactory.CreateCubeItem(item.gameObject, item.spriteRenderer.sortingOrder, MatchType.Purple);
+				temp = ItemFactory.CreateCubeItem(this, item.gameObject, MatchType.Purple);
 				DestroyImmediate(item);
 				item = temp;
 				break;
 			case ItemType.Balloon:
-				temp = ItemFactory.CreateBalloonItem(item.gameObject, item.spriteRenderer.sortingOrder);
+				temp = ItemFactory.CreateBalloonItem(this, item.gameObject, MatchType.None);
 				DestroyImmediate(item);
 				item = temp;
 				break;
 			case ItemType.Duck:
-				temp = ItemFactory.CreateDuckItem(item.gameObject, item.spriteRenderer.sortingOrder);
+				temp = ItemFactory.CreateDuckItem(this, item.gameObject, MatchType.None);
 				DestroyImmediate(item);
 				item = temp;
 				break;
 			case ItemType.LeftRocket:
-				temp = ItemFactory.CreateLeftRocketItem(item.gameObject, item.spriteRenderer.sortingOrder);
+				temp = ItemFactory.CreateLeftRocketItem(this, item.gameObject, MatchType.Special);
 				DestroyImmediate(item);
 				item = temp;
 				break;
 			case ItemType.RightRocket:
-				temp = ItemFactory.CreateRightRocketItem(item.gameObject, item.spriteRenderer.sortingOrder);
+				temp = ItemFactory.CreateRightRocketItem(this, item.gameObject, MatchType.Special);
 				DestroyImmediate(item);
 				item = temp;
 				break;

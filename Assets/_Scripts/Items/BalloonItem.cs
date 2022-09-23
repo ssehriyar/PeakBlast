@@ -2,33 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using DG.Tweening;
 
 public class BalloonItem : Item
 {
-	public override void Init(int orderInLayer)
+	public override void SetSprite()
 	{
-		base.Init(orderInLayer);
-		spriteRenderer.sprite = scriptableContainer.sprites.Balloon;
+		spriteRenderer.sprite = scriptableContainer.spritesSC.Balloon;
 	}
 
-	public override MatchType GetMatchType()
-	{
-		return MatchType.None;
-	}
-
-	public override bool CanBeExplodedByNeighbourMatch()
-	{
-		return true;
-	}
-
-	public override bool CanBeExplodedByTouch()
+	public override bool Execute()
 	{
 		return false;
 	}
 
-	public override bool CanBeMatchedByTouch()
+	public override void SpecialExecute()
 	{
-		return false;
+
 	}
 
 	public override bool CanFall()
@@ -36,13 +26,34 @@ public class BalloonItem : Item
 		return true;
 	}
 
-	public override void Explode()
+	public override bool ExplodeNeighbourmatch()
 	{
-		Destroy(gameObject);
+		return true;
 	}
 
-	public override void SpecialAction(Tile tile, ref Stack<Tile> tiles)
+	public override void Explode()
 	{
+		SoundManager.Instance.PlaySound(scriptableContainer.audioSC.GetAudioClip(AudioType.Balloon));
+		DestroyObject();
+	}
 
+	public override void GoalExplode(Vector3 pos)
+	{
+		tweener = transform.DOMove(pos, moveSpeedToUI).OnComplete(() => OnMoveCompleted());
+	}
+
+	public void OnMoveCompleted()
+	{
+		SoundManager.Instance.PlaySound(scriptableContainer.audioSC.GetAudioClip(AudioType.Balloon));
+		DestroyObject();
+	}
+
+	public void DestroyObject()
+	{
+		if (tweener.IsActive())
+		{
+			tweener.Kill(true);
+		}
+		Destroy(gameObject);
 	}
 }
