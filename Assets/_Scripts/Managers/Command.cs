@@ -79,11 +79,11 @@ public class Command : MonoBehaviour
 
 		if (tile.item.matchType == matchType) // Cube
 		{
+			_tiles.Push(tile);
 			for (int i = 0; i < tile.neighbourTiles.Length; i++)
 			{
 				FindMatch(tile.neighbourTiles[i], matchType, visited);
 			}
-			_tiles.Push(tile);
 		}
 	}
 

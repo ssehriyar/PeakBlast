@@ -23,8 +23,15 @@ public class Tile : MonoBehaviour
 
 	public bool HasItem => item != null;
 
-	// Editor function
 	public void ApplyItemType()
+	{
+		Item temp = ItemFactory.CreateItem(this, itemType, item.transform.position, item.transform.parent);
+		DestroyImmediate(item.gameObject);
+		item = temp;
+	}
+
+	// Editor function
+	public void ApplyItemType2()
 	{
 		Item temp;
 		switch (itemType)
